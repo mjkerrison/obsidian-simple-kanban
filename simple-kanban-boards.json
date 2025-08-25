@@ -1,0 +1,184 @@
+[
+
+  {"id": "work",
+    "name": "Work",
+    "filter": {"type": "tag", "value": "#for/work"},
+    "hideFilterTags": ["#todo", "#for/work"],
+    "showDates": {"due": true, "scheduled": true, "created": true, "completed": true},
+
+    "columns": [
+
+      {
+        "id": "noStatus",
+        "name": "No status",
+        "type": "filtered",
+        "filter": {
+          "type": "not", 
+          "children": [
+            {
+              "type": "or",
+              "children": [
+                {"type": "tag", "value": "#in/backlog"},
+                {"type": "tag", "value": "#in/wip"},
+                {"type": "tag", "value": "#in/blocked"}
+              ]
+            }
+          ]}
+      },
+
+      {
+        "id": "backlog",
+        "name": "Backlog",
+        "type": "filtered",
+        "filter": {"type": "tag", "value": "#in/backlog"},
+        "statusTag": "#in/backlog"
+      },
+
+      {
+        "id": "wip",
+        "name": "WIP",
+        "type": "filtered",
+        "filter": {"type": "tag", "value": "#in/wip"},
+        "statusTag": "#in/wip"
+      },
+
+      {
+        "id": "blocked",
+        "name": "Blocked",
+        "type": "filtered",
+        "filter": {"type": "tag", "value": "#in/blocked"},
+        "statusTag": "#in/blocked"
+      },
+
+      {
+        "id": "completed",
+        "name": "Done",
+        "type": "completed",
+        "filter": {"type": "or", "children": [] }
+      }
+
+    ]
+
+  },
+  
+  {"id": "home",
+    "name": "Home",
+    "filter": {"type": "tag", "value": "#for/home"},
+    "hideFilterTags": ["#todo", "#for/home"],
+    "showDates": {"due": true, "scheduled": true, "created": true, "completed": true},
+    
+    "columns": [
+
+      {
+        "id": "noStatus",
+        "name": "No status",
+        "type": "filtered",
+        "filter": {
+          "type": "not", 
+          "children": [
+            {
+              "type": "or",
+              "children": [
+                {"type": "tag", "value": "#in/backlog"},
+                {"type": "tag", "value": "#in/wip"},
+                {"type": "tag", "value": "#in/blocked"}
+              ]
+            }
+          ]}
+      },
+
+      {
+        "id": "backlog",
+        "name": "Backlog",
+        "type": "filtered",
+        "filter": {"type": "tag", "value": "#in/backlog"},
+        "statusTag": "#in/backlog"
+      },
+
+      {
+        "id": "wip",
+        "name": "WIP",
+        "type": "filtered",
+        "filter": {"type": "tag", "value": "#in/wip"},
+        "statusTag": "#in/wip"
+      },
+
+      {
+        "id": "blocked",
+        "name": "Blocked",
+        "type": "filtered",
+        "filter": {"type": "tag", "value": "#in/blocked"},
+        "statusTag": "#in/blocked"
+      },
+
+      {
+        "id": "completed",
+        "name": "Done",
+        "type": "completed",
+        "filter": {"type": "or", "children": [] }
+      }
+
+    ]
+
+  },
+  
+  {"id": "contexts",
+    "name": "Contexts",
+    "filter": { "type": "or", "children": [] },
+    "hideFilterTags": ["#todo","#for/work", "#for/home", "#for/hobbies"],
+    "showDates": { "due": true, "scheduled": true, "created": true, "completed": true },
+
+    "columns": [
+
+      {
+        "id": "contextless",
+        "name": "Contextless",
+        "type": "filtered",
+        "filter": {
+          "type": "not",
+          "children": [
+            {
+              "type": "or",
+              "children": [
+                { "type": "tag", "value": "#for/work" },
+                { "type": "tag", "value": "#for/home" },
+                { "type": "tag", "value": "#for/hobbies" }
+              ]
+            }
+          ]
+        }
+      },
+      
+      {
+        "id": "work",
+        "name": "Work",
+        "type": "filtered",
+        "filter": { "type": "tag", "value": "#for/work" }
+      },
+
+      {
+        "id": "home",
+        "name": "Home",
+        "type": "filtered",
+        "filter": { "type": "tag", "value": "#for/home" }
+      },
+
+      {
+        "id": "hobbies",
+        "name": "Hobbies",
+        "type": "filtered",
+        "filter": { "type": "tag", "value": "#for/hobbies" }
+      },
+
+      {
+        "id": "completed",
+        "name": "Done",
+        "type": "completed",
+        "filter": {"type": "or", "children": [] }
+      }
+
+    ]
+
+  }
+
+]

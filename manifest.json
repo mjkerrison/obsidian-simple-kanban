@@ -1,0 +1,11 @@
+{
+  "id": "obsidian-simple-kanban",
+  "name": "Simple Kanban",
+  "version": "0.0.1",
+  "minAppVersion": "1.5.0",
+  "description": "Aggregate Tasks into customizable kanban boards with filtering and drag-and-drop.",
+  "author": "Your Name",
+  "authorUrl": "",
+  "isDesktopOnly": false
+}
+

@@ -1,0 +1,93 @@
+/* Minimal styles; rely on Obsidian theme variables */
+.simple-kanban {
+  display: flex;
+  gap: var(--size-4-4);
+  overflow-x: auto;
+  padding: var(--size-4-2);
+}
+
+.simple-kanban-tabs {
+  display: flex;
+  gap: var(--size-4-2);
+  border-bottom: 1px solid var(--background-modifier-border);
+  margin-bottom: var(--size-4-2);
+}
+
+.simple-kanban-tab {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 10px;
+  cursor: pointer;
+  border-radius: var(--radius-s) var(--radius-s) 0 0;
+}
+
+.simple-kanban-tab.is-active {
+  background: var(--background-primary);
+  border: 1px solid var(--background-modifier-border);
+  border-bottom: none;
+}
+
+.simple-kanban-column {
+  min-width: 280px;
+  max-width: 360px;
+}
+
+.simple-kanban-card {
+  background: var(--background-primary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-s);
+  padding: var(--size-4-2);
+  margin-bottom: var(--size-4-2);
+  position: relative;
+}
+
+.simple-kanban-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.simple-kanban-tag {
+  background: var(--background-secondary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 999px;
+  padding: 2px 6px;
+  font-size: 0.85em;
+}
+
+.simple-kanban-dates {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 8px;
+  color: var(--text-muted);
+  font-size: 0.85em;
+}
+
+.simple-kanban-date.is-overdue {
+  color: var(--text-error);
+  font-weight: 600;
+}
+
+.simple-kanban-actions {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  display: inline-flex;
+  gap: 6px;
+}
+.simple-kanban-action-icon {
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-s);
+  background: var(--background-primary);
+  opacity: 0.9;
+}
+.simple-kanban-action-icon:hover {
+  opacity: 1;
+}
