@@ -41,11 +41,45 @@
   position: relative;
 }
 
+.simple-kanban-subtasks {
+  margin-top: 6px;
+  margin-left: 18px; /* slight extra indent for visual hierarchy */
+}
+.simple-kanban-subtask {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.95em;
+  color: var(--text-normal);
+}
+.simple-kanban-subtask.is-complete span {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}
+
+.simple-kanban-notes {
+  margin-top: 6px;
+  padding-left: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: var(--text-muted);
+  font-size: 0.9em;
+}
+.simple-kanban-note::before {
+  content: '• ';
+  margin-right: 4px;
+}
+
 .simple-kanban-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
   margin-top: 6px;
+}
+
+.simple-kanban-title {
+  font-weight: 600;
 }
 
 .simple-kanban-tag {

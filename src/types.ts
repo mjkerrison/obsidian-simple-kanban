@@ -2,6 +2,7 @@ export interface Subtask {
   text: string;
   isComplete: boolean;
   tags: string[];
+  lineNumber: number;
 }
 
 export interface Task {
@@ -50,7 +51,6 @@ export interface Board {
   name: string;
   filter: FilterExpression;
   columns: Column[];
-  showCompletedColumn: boolean;
 
   // Display settings
   hideFilterTags: string[];
@@ -64,16 +64,11 @@ export interface Board {
 
 export interface PluginSettings {
   boards: Board[];
-  scanInterval: number;
-  ignorePaths: string[];
-  completionFormat: 'tasks' | 'dataview' | 'cardboard' | 'none';
-  useUTC: boolean;
+  // If non-empty, only include top-level tasks that have at least one of these tags
+  taskIncludeTags: string[];
 }
 
 export const DEFAULT_SETTINGS: PluginSettings = {
   boards: [],
-  scanInterval: 2000,
-  ignorePaths: ['.obsidian/', 'node_modules/'],
-  completionFormat: 'tasks',
-  useUTC: true,
+  taskIncludeTags: [],
 };

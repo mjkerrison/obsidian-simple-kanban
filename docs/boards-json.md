@@ -19,7 +19,6 @@ The settings field is an array of boards:
 - `name` (string): Display name
 - `filter` (FilterExpression): Board-level filter applied before column filters
 - `columns` (Column[]): Columns rendered left → right
-- `showCompletedColumn` (boolean): Legacy toggle; prefer `showCompleted` on columns
 - `hideFilterTags` (string[]): Tags hidden from card chips
 - `showDates` (object): Toggle date chips in the footer
   - `created` (boolean)
@@ -86,7 +85,6 @@ Notes:
     { "id": "hobbies", "name": "Hobbies", "type": "filtered", "filter": { "type": "tag", "value": "#for/hobbies" } },
     { "id": "completed", "name": "Completed", "type": "filtered", "filter": { "type": "or", "children": [] }, "showCompleted": true }
   ],
-  "showCompletedColumn": true,
   "hideFilterTags": ["#for/work", "#for/home", "#for/hobbies"],
   "showDates": { "created": true, "scheduled": true, "due": true, "completed": true }
 }
@@ -105,7 +103,6 @@ Notes:
     { "id": "blocked", "name": "Blocked", "type": "filtered", "filter": { "type": "tag", "value": "#in/blocked" }, "statusTag": "#in/blocked" },
     { "id": "done", "name": "Done", "type": "filtered", "filter": { "type": "or", "children": [] }, "showCompleted": true }
   ],
-  "showCompletedColumn": true,
   "hideFilterTags": ["#todo", "#in/backlog", "#in/wip", "#in/blocked"],
   "showDates": { "created": true, "scheduled": true, "due": true, "completed": true }
 }
@@ -117,4 +114,3 @@ Notes:
 - Hide structural tags in `hideFilterTags` so cards are focused.
 - Use a Completed column with `showCompleted: true` to review what’s done.
 - For future drag-and-drop, add `statusTag` to columns where moving should change a tag.
-

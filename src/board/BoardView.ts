@@ -13,6 +13,7 @@ export class BoardView extends ItemView {
   private onJump: ((t: Task) => void) | null = null;
   private onDelete: ((t: Task) => void) | null = null;
   private onEdit: ((t: Task) => void) | null = null;
+  private onToggleSubtask: ((t: Task, idx: number) => void) | null = null;
   private lastScrollLeft = 0;
   private lastScrollTop = 0;
 
@@ -99,6 +100,7 @@ export class BoardView extends ItemView {
           onJump: this.onJump ?? undefined,
           onDelete: this.onDelete ?? undefined,
           onEdit: this.onEdit ?? undefined,
+          onToggleSubtask: this.onToggleSubtask ?? undefined,
         })
       );
     }
@@ -128,10 +130,11 @@ export class BoardView extends ItemView {
     this.onSelectBoard = cb;
   }
 
-  setHandlers(handlers: { onToggle?: (t: Task) => void; onJump?: (t: Task) => void; onDelete?: (t: Task) => void; onEdit?: (t: Task) => void }) {
+  setHandlers(handlers: { onToggle?: (t: Task) => void; onJump?: (t: Task) => void; onDelete?: (t: Task) => void; onEdit?: (t: Task) => void; onToggleSubtask?: (t: Task, idx: number) => void }) {
     this.onToggle = handlers.onToggle ?? null;
     this.onJump = handlers.onJump ?? null;
     this.onDelete = handlers.onDelete ?? null;
     this.onEdit = handlers.onEdit ?? null;
+    this.onToggleSubtask = handlers.onToggleSubtask ?? null;
   }
 }

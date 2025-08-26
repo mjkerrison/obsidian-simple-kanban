@@ -1,33 +1,84 @@
 import type { Task } from './types';
 
-// Placeholder: real implementation will parse markdown lines and emojis
-export function parseTasksFromContent(content: string, path: string): Task[] {
+// Parse markdown content into Task[] with subtasks and notes.
+// - Top-level (or any) checkbox lines become cards
+// - More-indented checkbox lines become subtasks of the nearest less-indented task
+// - More-indented non-checkbox lines become notes on the nearest less-indented task
+export function parseTasksFromContent(content: string, path: string, opts?: { includeTags?: string[] }): Task[] {
   const lines = content.split(/\r?\n/);
   const tasks: Task[] = [];
+  const stack: Array<{ indent: number; task: Task }> = [];
+
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
-    const match = /^\s*- \[( |x|X)\]\s+(.*)$/.exec(line);
-    if (!match) continue;
-    const isComplete = match[1].toLowerCase() === 'x';
-    let rawText = match[2];
-    const id = `${path}:${i + 1}`;
-    const tags = extractTags(rawText);
-    rawText = stripTags(rawText);
-    const { text, createdDate, scheduledDate, dueDate, completedDate } = extractAndStripDates(rawText);
-    tasks.push({
-      id,
-      filepath: path,
-      lineNumber: i + 1,
-      text,
-      isComplete,
-      tags,
-      subtasks: [],
-      notes: [],
-      createdDate,
-      scheduledDate,
-      dueDate,
-      completedDate,
-    });
+    const taskMatch = /^([ \t]*)- \[( |x|X)\]\s+(.*)$/.exec(line);
+    const indentOf = (s: string) => s.replace(/\t/g, '  ').length;
+
+    if (taskMatch) {
+      const indent = indentOf(taskMatch[1] ?? '');
+      const isComplete = taskMatch[2].toLowerCase() === 'x';
+      const rawTail = taskMatch[3];
+
+      // unwind stack to the nearest parent
+      while (stack.length > 0 && indent <= stack[stack.length - 1].indent) stack.pop();
+
+      if (stack.length === 0) {
+        // New top-level (or root-level) task → card
+        const id = `${path}:${i + 1}`;
+        const tags = extractTags(rawTail);
+        const includeTags = opts?.includeTags ?? [];
+        if (includeTags.length > 0) {
+          const tagSet = new Set(tags);
+          const matches = includeTags.some((t) => tagSet.has(t));
+          if (!matches) {
+            // Do not include this task or its children
+            continue;
+          }
+        }
+        const stripped = stripTags(rawTail);
+        const { text, createdDate, scheduledDate, dueDate, completedDate } = extractAndStripDates(stripped);
+        const task: Task = {
+          id,
+          filepath: path,
+          lineNumber: i + 1,
+          text,
+          isComplete,
+          tags,
+          subtasks: [],
+          notes: [],
+          createdDate,
+          scheduledDate,
+          dueDate,
+          completedDate,
+        };
+        tasks.push(task);
+        stack.push({ indent, task });
+      } else {
+        // Subtask of current parent
+        const parent = stack[stack.length - 1].task;
+        const subTags = extractTags(rawTail);
+        const subStripped = stripTags(rawTail);
+        const clean = extractAndStripDates(subStripped).text; // dates on subtasks are ignored for now
+        parent.subtasks.push({ text: clean, isComplete, tags: subTags, lineNumber: i + 1 });
+        // do not push to stack — we only support one subtask level for display
+      }
+      continue;
+    }
+
+    // Non-task line: if it's indented more than the current parent, treat as a note
+    const m = /^([ \t]*)(.*)$/.exec(line);
+    if (m) {
+      const indent = indentOf(m[1] ?? '');
+      const contentText = (m[2] ?? '').trimEnd();
+      if (stack.length > 0 && indent > stack[stack.length - 1].indent) {
+        const parent = stack[stack.length - 1].task;
+        const note = contentText.replace(/^[-*+]\s+/, '').trim();
+        if (note.length > 0) parent.notes.push(note);
+        continue;
+      }
+      // If indentation collapses, unwind stack
+      while (stack.length > 0 && indent <= stack[stack.length - 1].indent) stack.pop();
+    }
   }
   return tasks;
 }

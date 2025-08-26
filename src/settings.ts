@@ -17,19 +17,25 @@ export class SimpleKanbanSettingTab extends PluginSettingTab {
 
     containerEl.createEl('h2', { text: 'Simple Kanban Settings' });
 
+    // Global task filter
     new Setting(containerEl)
-      .setName('Scan interval (ms)')
-      .setDesc('How often to scan for changes when idle.')
+      .setName('Global task tags')
+      .setDesc('Only include top-level tasks that have at least one of these tags (comma-separated). Leave empty to include all tasks.')
       .addText((text) =>
         text
-          .setPlaceholder('2000')
-          .setValue(String(this.plugin.settings.scanInterval))
+          .setPlaceholder('#todo, #task')
+          .setValue(this.plugin.settings.taskIncludeTags.join(', '))
           .onChange(async (value) => {
-            const v = Number(value);
-            if (!Number.isNaN(v) && v > 0) {
-              this.plugin.settings.scanInterval = v;
-              await this.plugin.saveSettings();
-            }
+            const parts = value
+              .split(',')
+              .map((s) => s.trim())
+              .filter((s) => s.length > 0)
+              .map((s) => (s.startsWith('#') ? s : `#${s}`));
+            this.plugin.settings.taskIncludeTags = parts;
+            await this.plugin.saveSettings();
+            // trigger a rescan to apply filter
+            await this.plugin.rescanAllTasks();
+            this.plugin.requestBoardRerender();
           })
       );
 
@@ -63,7 +69,6 @@ export class SimpleKanbanSettingTab extends PluginSettingTab {
                   { id: 'blocked', name: 'Blocked', filter: { type: 'tag', value: '#in/blocked' }, type: 'filtered', statusTag: '#in/blocked' },
                   { id: 'completed', name: 'Completed', filter: { type: 'or', children: [] }, type: 'filtered', showCompleted: true }
                 ],
-                showCompletedColumn: true,
                 hideFilterTags: ['#todo'],
                 showDates: { due: true, scheduled: true, created: true, completed: true }
               }

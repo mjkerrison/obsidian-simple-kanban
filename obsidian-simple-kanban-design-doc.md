@@ -66,7 +66,7 @@ Primary user is someone who:
 
 **Data Store**
 - In-memory cache of parsed tasks
-- Board configurations from `data.json`
+- Board configurations from plugin settings
 - Manages task-to-column mapping
 
 **Board Engine**
@@ -124,7 +124,6 @@ interface Board {
   name: string;
   filter: FilterExpression;  // Board-level filter
   columns: Column[];
-  showCompletedColumn: boolean;
   
   // Display settings
   hideFilterTags: string[];  // Tags to hide from cards
@@ -132,6 +131,7 @@ interface Board {
     due: boolean;
     scheduled: boolean;
     created: boolean;
+    completed: boolean;
   };
 }
 
@@ -152,10 +152,6 @@ interface FilterExpression {
 // Plugin settings
 interface PluginSettings {
   boards: Board[];
-  scanInterval: number;  // Milliseconds between scans
-  ignorePaths: string[];  // Files/folders to ignore
-  completionFormat: 'tasks' | 'dataview' | 'cardboard' | 'none';
-  useUTC: boolean;  // For timestamps
 }
 ```
 
@@ -170,11 +166,11 @@ interface PluginSettings {
   - Task text
   - Subtasks and notes (indented content)
   - Tags (as chips, configurable visibility)
-  - Dates (due, scheduled, created - when present)
+  - Dates (due, scheduled, created, completed - when present)
 - Real-time updates when source files change
 
 #### Board Management
-- Multiple board configurations stored in `data.json`
+- Multiple board configurations stored in plugin settings
 - Board-level filtering with boolean logic
 - Column-level filtering with boolean logic
 - Tab-based board switching
@@ -221,7 +217,7 @@ Implement in this order for incremental development:
 
 ### Phase 1: Core Infrastructure
 1. **Plugin scaffold** - Basic Obsidian plugin structure
-2. **Settings management** - Load/save `data.json` with board configs
+2. **Settings management** - Load/save plugin settings with board configs
 3. **Task parser** - Extract tasks from markdown files
 4. **Data store** - In-memory task cache
 

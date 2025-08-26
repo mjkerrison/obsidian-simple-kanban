@@ -6,7 +6,7 @@ Aggregate your Tasks across the vault into customizable kanban boards with power
 
 - Board tabs in a main-pane view
 - Column and board filtering with boolean logic (AND/OR/NOT, parentheses)
-- Cards show title, tag chips, and date footer (➕ created, ⏳ scheduled, 📅 due, ✅ completed)
+- Cards show title, tag chips, date footer (➕ created, ⏳ scheduled, 📅 due, ✅ completed), and any subtasks/child notes
 - Tasks stay in their original notes; minimal edits touch only the task line
 - Interactions: complete via Tasks API, Jump-to-source, Edit in Tasks modal, soft Delete (<del>…</del>)
 - Completed handling: columns omit completed by default; per-column `showCompleted: true` shows only completed
@@ -52,7 +52,6 @@ Use Settings → Simple Kanban → Boards (JSON). Click “Load Sample” to sta
   - `name`: string
   - `filter`: FilterExpression (board-level)
   - `columns`: Column[]
-  - `showCompletedColumn`: boolean (legacy; use `showCompleted` per column instead)
   - `hideFilterTags`: string[] (tags hidden from chips)
   - `showDates`: { `due`: bool, `scheduled`: bool, `created`: bool, `completed`: bool }
 - Column
@@ -101,7 +100,6 @@ Example board with contexts and a completed column:
       { "id": "hobbies", "name": "Hobbies", "type": "filtered", "filter": { "type": "tag", "value": "#for/hobbies" } },
       { "id": "completed", "name": "Completed", "type": "filtered", "filter": { "type": "or", "children": [] }, "showCompleted": true }
     ],
-    "showCompletedColumn": true,
     "hideFilterTags": ["#for/work", "#for/home", "#for/hobbies"],
     "showDates": { "due": true, "scheduled": true, "created": true, "completed": true }
   }
@@ -109,6 +107,15 @@ Example board with contexts and a completed column:
 ```
 
 More schema detail lives in `docs/boards-json.md`.
+
+## Global Task Filter
+
+To align with Tasks plugin behavior, you can restrict which checklist items are treated as tasks at all:
+
+- Settings → Simple Kanban → Global task tags: enter tags (comma‑separated) like `#todo, #task`.
+- When set, only top‑level checklist items containing at least one of these tags are included.
+- Subtasks and child notes remain visible under included parent tasks.
+- Leave empty to include all top‑level tasks.
 
 ## Commands
 
@@ -118,11 +125,10 @@ More schema detail lives in `docs/boards-json.md`.
 ## Known Limitations
 
 - Minor flicker on rerender as scroll is restored
-- Subtasks/indented notes are not displayed
+- Subtasks and child notes are displayed on cards; subtasks support inline toggling
 - No sorting controls yet; no bulk operations
 - Drag-and-drop between columns not yet implemented (planned via `statusTag`)
 
 ## Contributing / Development
 
 See `DEVELOPER.md` for architecture, code map, and how to work on the plugin.
-

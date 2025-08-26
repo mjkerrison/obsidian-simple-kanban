@@ -5,7 +5,7 @@ type DateToggles = { due: boolean; scheduled: boolean; created: boolean; complet
 
 export function renderCard(
   task: Task,
-  options?: { hiddenTags?: string[]; showDates?: DateToggles; onToggle?: (t: Task) => void; onJump?: (t: Task) => void }
+  options?: { hiddenTags?: string[]; showDates?: DateToggles; onToggle?: (t: Task) => void; onJump?: (t: Task) => void; onEdit?: (t: Task) => void; onDelete?: (t: Task) => void; onToggleSubtask?: (t: Task, idx: number) => void }
 ): HTMLElement {
   const el = createDiv({ cls: 'simple-kanban-card' });
   const header = el.createEl('div');
@@ -18,7 +18,30 @@ export function renderCard(
     });
   }
   const cleanText = stripDecorationsForDisplay(task.text);
-  header.createEl('span', { text: ` ${cleanText}` });
+  header.createEl('span', { cls: 'simple-kanban-title', text: ` ${cleanText}` });
+
+  // Subtasks (read-only checkboxes) and notes
+  if (task.subtasks && task.subtasks.length > 0) {
+    const subs = el.createDiv({ cls: 'simple-kanban-subtasks' });
+    task.subtasks.forEach((st, idx) => {
+      const row = subs.createDiv({ cls: 'simple-kanban-subtask' });
+      if (st.isComplete) row.addClass('is-complete');
+      const cb = row.createEl('input', { attr: { type: 'checkbox' } });
+      cb.checked = st.isComplete;
+      cb.addEventListener('change', (e) => {
+        e.stopPropagation();
+        options?.onToggleSubtask && options.onToggleSubtask(task, idx);
+      });
+      row.createEl('span', { text: ` ${stripDecorationsForDisplay(st.text)}` });
+    });
+  }
+  if (task.notes && task.notes.length > 0) {
+    const notes = el.createDiv({ cls: 'simple-kanban-notes' });
+    for (const n of task.notes) {
+      const li = notes.createDiv({ cls: 'simple-kanban-note' });
+      li.setText(n);
+    }
+  }
   // Footer placeholder
   const tagsWrap = el.createDiv({ cls: 'simple-kanban-tags' });
   const hidden = new Set(options?.hiddenTags ?? []);

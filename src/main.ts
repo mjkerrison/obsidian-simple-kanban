@@ -61,7 +61,9 @@ export default class SimpleKanbanPlugin extends Plugin {
     const allTasks: ReturnType<typeof parseTasksFromContent> = [];
     for (const f of files) {
       const content = await this.app.vault.read(f);
-      allTasks.push(...parseTasksFromContent(content, f.path));
+      allTasks.push(
+        ...parseTasksFromContent(content, f.path, { includeTags: this.settings.taskIncludeTags })
+      );
     }
     dataStore.setTasks(allTasks);
     console.log(`[Simple Kanban] Rescan complete: ${allTasks.length} tasks from ${files.length} markdown files.`);
@@ -90,6 +92,7 @@ export default class SimpleKanbanPlugin extends Plugin {
       onJump: (t) => this.jumpToTask(t).catch(console.error),
       onDelete: (t) => this.softDeleteTask(t).catch(console.error),
       onEdit: (t) => this.editTask(t).catch(console.error),
+      onToggleSubtask: (t, idx) => this.toggleSubtaskCompletion(t, idx).catch(console.error),
     });
   }
 
@@ -120,6 +123,7 @@ export default class SimpleKanbanPlugin extends Plugin {
       onJump: (t) => this.jumpToTask(t).catch(console.error),
       onDelete: (t) => this.softDeleteTask(t).catch(console.error),
       onEdit: (t) => this.editTask(t).catch(console.error),
+      onToggleSubtask: (t, idx) => this.toggleSubtaskCompletion(t, idx).catch(console.error),
     });
   }
 
@@ -136,7 +140,6 @@ export default class SimpleKanbanPlugin extends Plugin {
         { id: 'wip', name: 'WIP', filter: parseFilterString('#in/wip'), type: 'filtered', statusTag: '#in/wip' },
         { id: 'blocked', name: 'Blocked', filter: parseFilterString('#in/blocked'), type: 'filtered', statusTag: '#in/blocked' },
       ],
-      showCompletedColumn: true,
       hideFilterTags: ['#todo'],
       showDates: { due: true, scheduled: true, created: true, completed: true },
     };
@@ -223,6 +226,42 @@ export default class SimpleKanbanPlugin extends Plugin {
       console.warn('[Simple Kanban] Tasks API edit failed; falling back to open note.', e);
     }
     await this.jumpToTask(task);
+  }
+
+  private async toggleSubtaskCompletion(task: import('./types').Task, subIndex: number) {
+    const sub = task.subtasks?.[subIndex];
+    if (!sub) return;
+    const file = this.app.vault.getAbstractFileByPath(task.filepath) as TFile | null;
+    if (!file) return;
+    const content = await this.app.vault.read(file);
+    const lines = content.split(/\r?\n/);
+    if (sub.lineNumber <= 0 || sub.lineNumber > lines.length) return;
+    const line = lines[sub.lineNumber - 1];
+    let newLine: string | null = null;
+    try {
+      const api = this.getTasksApiV1();
+      if (api?.executeToggleTaskDoneCommand) {
+        newLine = api.executeToggleTaskDoneCommand(line, task.filepath);
+      }
+    } catch (e) {
+      console.warn('[Simple Kanban] Tasks API toggle failed for subtask, falling back.', e);
+    }
+    if (!newLine) {
+      const isChecked = /- \[[xX]\]/.test(line);
+      if (isChecked) {
+        newLine = line.replace(/- \[[xX]\]/, '- [ ]').replace(/\s✅\s\d{4}-\d{2}-\d{2}(?:\s+\d{2}:\d{2})?/, '');
+      } else {
+        const now = new Date();
+        const y = now.getFullYear();
+        const m = String(now.getMonth() + 1).padStart(2, '0');
+        const d = String(now.getDate()).padStart(2, '0');
+        const hh = String(now.getHours()).padStart(2, '0');
+        const mm = String(now.getMinutes()).padStart(2, '0');
+        newLine = line.replace(/- \[ \]/, '- [x]') + ` ✅ ${y}-${m}-${d} ${hh}:${mm}`;
+      }
+    }
+    await replaceLineWithText(this.app.vault, task.filepath, sub.lineNumber, newLine);
+    // watcher will update view
   }
 
   private getTasksApiV1(): any {
