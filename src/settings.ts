@@ -63,11 +63,11 @@ export class SimpleKanbanSettingTab extends PluginSettingTab {
                 name: 'Work',
                 filter: { type: 'tag', value: '#for/work' },
                 columns: [
-                  { id: 'all', name: 'All', filter: { type: 'or', children: [] }, type: 'filtered' },
-                  { id: 'backlog', name: 'Backlog', filter: { type: 'tag', value: '#in/backlog' }, type: 'filtered', statusTag: '#in/backlog' },
-                  { id: 'wip', name: 'WIP', filter: { type: 'tag', value: '#in/wip' }, type: 'filtered', statusTag: '#in/wip' },
-                  { id: 'blocked', name: 'Blocked', filter: { type: 'tag', value: '#in/blocked' }, type: 'filtered', statusTag: '#in/blocked' },
-                  { id: 'completed', name: 'Completed', filter: { type: 'or', children: [] }, type: 'filtered', showCompleted: true }
+                  { id: 'all', name: 'All', filter: { type: 'or', children: [] }, type: 'filtered', sort: { key: 'due', direction: 'asc' } },
+                  { id: 'backlog', name: 'Backlog', filter: { type: 'tag', value: '#in/backlog' }, type: 'filtered', statusTag: '#in/backlog', sort: { key: 'title', direction: 'asc' } },
+                  { id: 'wip', name: 'WIP', filter: { type: 'tag', value: '#in/wip' }, type: 'filtered', statusTag: '#in/wip', sort: { key: 'due', direction: 'asc' } },
+                  { id: 'blocked', name: 'Blocked', filter: { type: 'tag', value: '#in/blocked' }, type: 'filtered', statusTag: '#in/blocked', sort: { key: 'title', direction: 'asc' } },
+                  { id: 'completed', name: 'Completed', filter: { type: 'or', children: [] }, type: 'filtered', showCompleted: true, sort: { key: 'completed', direction: 'desc' } }
                 ],
                 hideFilterTags: ['#todo'],
                 showDates: { due: true, scheduled: true, created: true, completed: true }

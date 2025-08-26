@@ -44,6 +44,11 @@ export interface Column {
   statusTag?: string;
   // Show only completed tasks in this column (default: false = omit completed)
   showCompleted?: boolean;
+  // Optional sorting for tasks in this column
+  sort?: {
+    key: 'due' | 'scheduled' | 'created' | 'completed' | 'title';
+    direction: 'asc' | 'desc';
+  };
 }
 
 export interface Board {

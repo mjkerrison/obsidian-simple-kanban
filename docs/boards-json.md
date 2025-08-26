@@ -36,6 +36,10 @@ The settings field is an array of boards:
 - `showCompleted?` (boolean):
   - `false` (default): omit completed tasks
   - `true`: only show completed tasks
+ - `sort?` (object): Sort tasks within the column
+   - `key`: `"due" | "scheduled" | "created" | "completed" | "title"`
+   - `direction`: `"asc" | "desc"`
+   - Notes: Missing dates sort last; ties fall back to title ascending
 
 ## FilterExpression (AST)
 
@@ -98,10 +102,10 @@ Notes:
   "name": "Status",
   "filter": { "type": "or", "children": [] },
   "columns": [
-    { "id": "backlog", "name": "Backlog", "type": "filtered", "filter": { "type": "tag", "value": "#in/backlog" }, "statusTag": "#in/backlog" },
-    { "id": "wip", "name": "WIP", "type": "filtered", "filter": { "type": "tag", "value": "#in/wip" }, "statusTag": "#in/wip" },
-    { "id": "blocked", "name": "Blocked", "type": "filtered", "filter": { "type": "tag", "value": "#in/blocked" }, "statusTag": "#in/blocked" },
-    { "id": "done", "name": "Done", "type": "filtered", "filter": { "type": "or", "children": [] }, "showCompleted": true }
+    { "id": "backlog", "name": "Backlog", "type": "filtered", "filter": { "type": "tag", "value": "#in/backlog" }, "statusTag": "#in/backlog", "sort": { "key": "title", "direction": "asc" } },
+    { "id": "wip", "name": "WIP", "type": "filtered", "filter": { "type": "tag", "value": "#in/wip" }, "statusTag": "#in/wip", "sort": { "key": "due", "direction": "asc" } },
+    { "id": "blocked", "name": "Blocked", "type": "filtered", "filter": { "type": "tag", "value": "#in/blocked" }, "statusTag": "#in/blocked", "sort": { "key": "title", "direction": "asc" } },
+    { "id": "done", "name": "Done", "type": "filtered", "filter": { "type": "or", "children": [] }, "showCompleted": true, "sort": { "key": "completed", "direction": "desc" } }
   ],
   "hideFilterTags": ["#todo", "#in/backlog", "#in/wip", "#in/blocked"],
   "showDates": { "created": true, "scheduled": true, "due": true, "completed": true }

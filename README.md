@@ -61,6 +61,8 @@ Use Settings → Simple Kanban → Boards (JSON). Click “Load Sample” to sta
   - `filter`: FilterExpression
   - `statusTag?`: string (for future drag-and-drop updates)
   - `showCompleted?`: boolean (default false = omit completed; true = only completed)
+  - `sort?`: `{ key: 'due'|'scheduled'|'created'|'completed'|'title', direction: 'asc'|'desc' }`
+    - Missing dates sort last; ties fall back to `title` asc
 
 FilterExpression (AST):
 - `{ "type": "tag", "value": "#for/work" }`
@@ -96,9 +98,9 @@ Example board with contexts and a completed column:
         }
       },
       { "id": "work", "name": "Work", "type": "filtered", "filter": { "type": "tag", "value": "#for/work" } },
-      { "id": "home", "name": "Home", "type": "filtered", "filter": { "type": "tag", "value": "#for/home" } },
+      { "id": "home", "name": "Home", "type": "filtered", "filter": { "type": "tag", "value": "#for/home" }, "sort": { "key": "due", "direction": "asc" } },
       { "id": "hobbies", "name": "Hobbies", "type": "filtered", "filter": { "type": "tag", "value": "#for/hobbies" } },
-      { "id": "completed", "name": "Completed", "type": "filtered", "filter": { "type": "or", "children": [] }, "showCompleted": true }
+      { "id": "completed", "name": "Completed", "type": "filtered", "filter": { "type": "or", "children": [] }, "showCompleted": true, "sort": { "key": "completed", "direction": "desc" } }
     ],
     "hideFilterTags": ["#for/work", "#for/home", "#for/hobbies"],
     "showDates": { "due": true, "scheduled": true, "created": true, "completed": true }

@@ -279,10 +279,39 @@ export default class SimpleKanbanPlugin extends Plugin {
     const all = dataStore.getAllTasks();
     for (const col of board.columns) {
       const showCompletedOnly = col.showCompleted === true || col.type === 'completed';
-      const tasks = all
+      let tasks = all
         .filter((t) => evaluateFilter(t, board.filter))
         .filter((t) => evaluateFilter(t, col.filter))
         .filter((t) => (showCompletedOnly ? t.isComplete : !t.isComplete));
+      // Column sorting (optional)
+      if (col.sort) {
+        const dir = col.sort.direction === 'desc' ? -1 : 1;
+        const key = col.sort.key;
+        const getDate = (t: any, k: typeof key): string | undefined => {
+          if (k === 'due') return t.dueDate;
+          if (k === 'scheduled') return t.scheduledDate;
+          if (k === 'created') return t.createdDate;
+          if (k === 'completed') return t.completedDate;
+          return undefined;
+        };
+        const cmp = (a: any, b: any): number => {
+          if (key === 'title') {
+            const at = (a.text ?? '').toString().toLowerCase();
+            const bt = (b.text ?? '').toString().toLowerCase();
+            return at.localeCompare(bt) * dir;
+          }
+          const ad = getDate(a, key);
+          const bd = getDate(b, key);
+          if (ad && bd) return (ad < bd ? -1 : ad > bd ? 1 : 0) * dir;
+          if (ad && !bd) return -1; // missing dates sort last
+          if (!ad && bd) return 1;
+          // fallback to title for stable-ish ordering
+          const at = (a.text ?? '').toString().toLowerCase();
+          const bt = (b.text ?? '').toString().toLowerCase();
+          return at.localeCompare(bt);
+        };
+        tasks = tasks.slice().sort(cmp);
+      }
       map.set(col.id, tasks);
     }
     const total = all.length;
