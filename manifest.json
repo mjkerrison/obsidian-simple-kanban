@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "minAppVersion": "1.5.0",
   "description": "Aggregate vault-wide Tasks into customizable kanban boards with filtering, subtasks, and drag-and-drop.",
-  "author": "Your Name",
-  "authorUrl": "",
+  "author": "mjkerrison (and GPT-5)",
+  "authorUrl": "https://github.com/mjkerrison",
   "isDesktopOnly": false
 }
