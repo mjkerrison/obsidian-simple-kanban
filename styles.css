@@ -32,6 +32,18 @@
   max-width: 360px;
 }
 
+.simple-kanban-column.is-droppable {
+  border: 2px dashed transparent;
+  border-radius: var(--radius-s);
+  padding: 2px;
+}
+.simple-kanban-column.is-droppable.is-dropover {
+  border-color: var(--background-modifier-border);
+}
+.simple-kanban-card.is-dragging {
+  opacity: 0.6;
+}
+
 .simple-kanban-card {
   background: var(--background-primary);
   border: 1px solid var(--background-modifier-border);

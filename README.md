@@ -9,6 +9,7 @@ Aggregate your Tasks across the vault into customizable kanban boards with power
 - Cards show title, tag chips, date footer (➕ created, ⏳ scheduled, 📅 due, ✅ completed), and any subtasks/child notes
 - Tasks stay in their original notes; minimal edits touch only the task line
 - Interactions: complete via Tasks API, Jump-to-source, Edit in Tasks modal, soft Delete (<del>…</del>)
+ - Interactions: complete via Tasks API, Jump-to-source, Edit in Tasks modal, soft Delete (<del>…</del>), drag-and-drop between status columns
 - Completed handling: columns omit completed by default; per-column `showCompleted: true` shows only completed
 - Settings include a JSON editor for board definitions and a manual Rescan command
 
@@ -59,7 +60,7 @@ Use Settings → Simple Kanban → Boards (JSON). Click “Load Sample” to sta
   - `name`: string
   - `type`: `"filtered"` (default) | `"completed"` (treated as `showCompleted: true`)
   - `filter`: FilterExpression
-  - `statusTag?`: string (for future drag-and-drop updates)
+  - `statusTag?`: string (used by drag-and-drop to represent this column's status tag)
   - `showCompleted?`: boolean (default false = omit completed; true = only completed)
   - `sort?`: `{ key: 'due'|'scheduled'|'created'|'completed'|'title', direction: 'asc'|'desc' }`
     - Missing dates sort last; ties fall back to `title` asc
@@ -110,6 +111,15 @@ Example board with contexts and a completed column:
 
 More schema detail lives in `docs/boards-json.md`.
 
+## Drag and Drop
+
+- Drag a card into another column to change its status tag.
+- Requirements: both source and destination columns must define `statusTag`.
+- Completed-only columns (`showCompleted: true` or `type: "completed"`) are not droppable.
+- Only top-level tasks are draggable (subtasks are not).
+- Only the board’s `statusTag`s are modified; other tags (e.g., `#todo`) are preserved.
+- Drag-and-drop does not change completion state; use the checkbox to complete.
+
 ## Global Task Filter
 
 To align with Tasks plugin behavior, you can restrict which checklist items are treated as tasks at all:
@@ -128,8 +138,7 @@ To align with Tasks plugin behavior, you can restrict which checklist items are 
 
 - Minor flicker on rerender as scroll is restored
 - Subtasks and child notes are displayed on cards; subtasks support inline toggling
-- No sorting controls yet; no bulk operations
-- Drag-and-drop between columns not yet implemented (planned via `statusTag`)
+- No bulk operations; limited sorting controls are per-column only
 
 ## Contributing / Development
 

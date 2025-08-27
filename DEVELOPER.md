@@ -59,6 +59,11 @@ We use the Tasks API v1, per docs:
 - Scroll preservation: capture before rerender, restore after DOM paint (double `requestAnimationFrame`) to reduce jump.
 - Global task filter: only top-level checkboxes with at least one of the specified tags are treated as tasks; subtasks/notes are only shown under included parents.
 - Behavior is driven by top-level tasks: filtering/columns/completion state ignore subtask state.
+- Drag-and-drop semantics:
+  - Only columns with `statusTag` participate; completed-only columns are not droppable.
+  - On drop: remove any of this board’s `statusTag`s from the task line; append the destination column’s `statusTag`.
+  - DnD never toggles completion and never edits non-status tags (e.g., `#todo`).
+  - Subtasks are not draggable.
 
 ### Ignore Paths Analysis (Performance)
 
@@ -79,9 +84,8 @@ We use the Tasks API v1, per docs:
 
 ## Known Gaps / Backlog
 
-- Drag & Drop between columns to update `statusTag` (remove source, add destination)
+- DnD polish: visual cues for non-droppable targets; improved highlighting; optional snapback
 - Reduce flicker with in-place DOM updates
-- Sorting by dates/priority
 - Bulk operations, keyboard shortcuts
 - Delete mode choice (strike vs comments)
 - Visual editor for boards/columns

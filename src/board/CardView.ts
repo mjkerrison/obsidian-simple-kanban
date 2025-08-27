@@ -1,13 +1,17 @@
 import type { Task } from '../types';
+import { makeDraggable } from './drag';
 import { setIcon } from 'obsidian';
 
 type DateToggles = { due: boolean; scheduled: boolean; created: boolean; completed: boolean };
 
 export function renderCard(
   task: Task,
-  options?: { hiddenTags?: string[]; showDates?: DateToggles; onToggle?: (t: Task) => void; onJump?: (t: Task) => void; onEdit?: (t: Task) => void; onDelete?: (t: Task) => void; onToggleSubtask?: (t: Task, idx: number) => void }
+  options?: { hiddenTags?: string[]; showDates?: DateToggles; onToggle?: (t: Task) => void; onJump?: (t: Task) => void; onEdit?: (t: Task) => void; onDelete?: (t: Task) => void; onToggleSubtask?: (t: Task, idx: number) => void; drag?: { enabled: boolean; fromColId: string } }
 ): HTMLElement {
   const el = createDiv({ cls: 'simple-kanban-card' });
+  if (options?.drag?.enabled) {
+    makeDraggable(el, { taskId: task.id, fromColId: options.drag.fromColId });
+  }
   const header = el.createEl('div');
   const checkbox = header.createEl('input', { attr: { type: 'checkbox' } });
   checkbox.checked = task.isComplete;

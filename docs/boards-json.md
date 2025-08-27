@@ -32,7 +32,7 @@ The settings field is an array of boards:
 - `name` (string)
 - `type` ("filtered" | "completed"): `completed` is treated as `showCompleted: true`
 - `filter` (FilterExpression): Column-level filter
-- `statusTag?` (string): Tag this column represents (for future drag-and-drop)
+- `statusTag?` (string): Tag this column represents (used by drag-and-drop to update the task's status)
 - `showCompleted?` (boolean):
   - `false` (default): omit completed tasks
   - `true`: only show completed tasks

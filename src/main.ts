@@ -93,6 +93,7 @@ export default class SimpleKanbanPlugin extends Plugin {
       onDelete: (t) => this.softDeleteTask(t).catch(console.error),
       onEdit: (t) => this.editTask(t).catch(console.error),
       onToggleSubtask: (t, idx) => this.toggleSubtaskCompletion(t, idx).catch(console.error),
+      onMove: (args) => this.moveTaskToColumn(args).catch(console.error),
     });
   }
 
@@ -124,6 +125,7 @@ export default class SimpleKanbanPlugin extends Plugin {
       onDelete: (t) => this.softDeleteTask(t).catch(console.error),
       onEdit: (t) => this.editTask(t).catch(console.error),
       onToggleSubtask: (t, idx) => this.toggleSubtaskCompletion(t, idx).catch(console.error),
+      onMove: (args) => this.moveTaskToColumn(args).catch(console.error),
     });
   }
 
@@ -262,6 +264,43 @@ export default class SimpleKanbanPlugin extends Plugin {
     }
     await replaceLineWithText(this.app.vault, task.filepath, sub.lineNumber, newLine);
     // watcher will update view
+  }
+
+  private async moveTaskToColumn(args: { taskId: string; fromColId: string; toColId: string }) {
+    const { taskId, toColId } = args;
+    const board = this.getCurrentBoard();
+    const toCol = board.columns.find((c) => c.id === toColId);
+    if (!toCol || !toCol.statusTag || toCol.showCompleted === true || toCol.type === 'completed') return;
+    // Find the task by id
+    const task = dataStore.getAllTasks().find((t) => t.id === taskId);
+    if (!task) return;
+    const file = this.app.vault.getAbstractFileByPath(task.filepath) as TFile | null;
+    if (!file) return;
+    const content = await this.app.vault.read(file);
+    const lines = content.split(/\r?\n/);
+    if (task.lineNumber <= 0 || task.lineNumber > lines.length) return;
+    const line = lines[task.lineNumber - 1];
+    const statusTags = board.columns.map((c) => c.statusTag).filter((x): x is string => typeof x === 'string');
+    const updated = this.replaceStatusTags(line, statusTags, toCol.statusTag);
+    if (updated && updated !== line) {
+      await replaceLineWithText(this.app.vault, task.filepath, task.lineNumber, updated);
+    }
+  }
+
+  private replaceStatusTags(line: string, statusTags: string[], destTag: string): string {
+    const esc = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    let out = line;
+    // Remove all existing board status tags
+    for (const tag of statusTags) {
+      const re = new RegExp(`(^|\\s)${esc(tag)}(?=\\s|$)`, 'g');
+      out = out.replace(re, (m, p1) => (p1 ? p1 : ' '));
+    }
+    // Remove any double spaces
+    out = out.replace(/\s{2,}/g, ' ').trimEnd();
+    // If destTag already present, return
+    const hasDest = new RegExp(`(^|\\s)${esc(destTag)}(\\s|$)`).test(out);
+    if (!hasDest) out = out + ` ${destTag}`;
+    return out;
   }
 
   private getTasksApiV1(): any {
