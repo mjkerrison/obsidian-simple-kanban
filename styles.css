@@ -38,10 +38,13 @@
   padding: 2px;
 }
 .simple-kanban-column.is-droppable.is-dropover {
-  border-color: var(--background-modifier-border);
+  border-color: var(--interactive-accent);
+  background: var(--background-secondary);
 }
 .simple-kanban-card.is-dragging {
   opacity: 0.6;
+  cursor: grabbing;
+  user-select: none;
 }
 
 .simple-kanban-card {
@@ -51,6 +54,10 @@
   padding: var(--size-4-2);
   margin-bottom: var(--size-4-2);
   position: relative;
+  transition: box-shadow 0.12s ease-in-out, border-color 0.12s ease-in-out, background 0.12s ease-in-out;
+}
+.simple-kanban-card:hover {
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
 }
 
 .simple-kanban-subtasks {
@@ -122,6 +129,8 @@
   bottom: 6px;
   display: inline-flex;
   gap: 6px;
+  opacity: 0;
+  transition: opacity 0.12s ease-in-out;
 }
 .simple-kanban-action-icon {
   width: 26px;
@@ -136,4 +145,16 @@
 }
 .simple-kanban-action-icon:hover {
   opacity: 1;
+}
+.simple-kanban-card:hover .simple-kanban-actions {
+  opacity: 1;
+}
+.simple-kanban-card[draggable="true"] {
+  cursor: grab;
+}
+
+/* Completed parent task title strike-through */
+.simple-kanban-card.is-complete .simple-kanban-title {
+  text-decoration: line-through;
+  color: var(--text-muted);
 }

@@ -9,6 +9,7 @@ export function renderCard(
   options?: { hiddenTags?: string[]; showDates?: DateToggles; onToggle?: (t: Task) => void; onJump?: (t: Task) => void; onEdit?: (t: Task) => void; onDelete?: (t: Task) => void; onToggleSubtask?: (t: Task, idx: number) => void; drag?: { enabled: boolean; fromColId: string } }
 ): HTMLElement {
   const el = createDiv({ cls: 'simple-kanban-card' });
+  if (task.isComplete) el.addClass('is-complete');
   if (options?.drag?.enabled) {
     makeDraggable(el, { taskId: task.id, fromColId: options.drag.fromColId });
   }
