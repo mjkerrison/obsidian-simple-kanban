@@ -140,3 +140,38 @@ export function parseFilterString(input: string): FilterExpression {
     return { type: 'or', children: [] };
   }
 }
+
+/**
+ * Convert a FilterExpression AST back to a filter string.
+ * Used by the settings GUI to display existing filters as editable text.
+ */
+export function stringifyFilter(expr: FilterExpression): string {
+  switch (expr.type) {
+    case 'empty':
+      return 'EMPTY';
+    case 'tag':
+      return expr.value ?? '';
+    case 'not': {
+      if (!expr.children?.length) return '';
+      const inner = stringifyFilter(expr.children[0]);
+      // Wrap in parens if inner is compound (contains spaces = has operators)
+      return inner.includes(' ') ? `NOT (${inner})` : `NOT ${inner}`;
+    }
+    case 'and': {
+      if (!expr.children?.length) return '';
+      return expr.children
+        .map((c) => {
+          const s = stringifyFilter(c);
+          // Wrap OR children in parens for correct precedence
+          return c.type === 'or' && (c.children?.length ?? 0) > 1 ? `(${s})` : s;
+        })
+        .join(' AND ');
+    }
+    case 'or': {
+      if (!expr.children?.length) return ''; // empty OR = match all
+      return expr.children.map((c) => stringifyFilter(c)).join(' OR ');
+    }
+    default:
+      return '';
+  }
+}

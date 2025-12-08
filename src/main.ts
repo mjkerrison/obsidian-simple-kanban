@@ -7,7 +7,7 @@ import { BoardView, VIEW_TYPE_KANBAN } from './board/BoardView';
 import { parseFilterString } from './filter/parser';
 import { evaluateFilter } from './filter/eval';
 import { FileWatcher } from './fileWatcher';
-import { replaceLineInFile, replaceLineWithText, wrapLineWithDel } from './utils/mdEdit';
+import { replaceLineWithText, wrapLineWithDel } from './utils/mdEdit';
 
 export default class SimpleKanbanPlugin extends Plugin {
   settings: PluginSettings;
@@ -347,7 +347,7 @@ export default class SimpleKanbanPlugin extends Plugin {
           // fallback to title for stable-ish ordering
           const at = (a.text ?? '').toString().toLowerCase();
           const bt = (b.text ?? '').toString().toLowerCase();
-          return at.localeCompare(bt);
+          return at.localeCompare(bt) * dir;
         };
         tasks = tasks.slice().sort(cmp);
       }

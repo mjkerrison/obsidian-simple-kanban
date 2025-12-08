@@ -8,10 +8,9 @@ Aggregate your Tasks across the vault into customizable kanban boards with power
 - Column and board filtering with boolean logic (AND/OR/NOT, parentheses)
 - Cards show title, tag chips, date footer (➕ created, ⏳ scheduled, 📅 due, ✅ completed), and any subtasks/child notes
 - Tasks stay in their original notes; minimal edits touch only the task line
-- Interactions: complete via Tasks API, Jump-to-source, Edit in Tasks modal, soft Delete (<del>…</del>)
- - Interactions: complete via Tasks API, Jump-to-source, Edit in Tasks modal, soft Delete (<del>…</del>), drag-and-drop between status columns
+- Interactions: complete via Tasks API, Jump-to-source, Edit in Tasks modal, soft Delete (<del>…</del>), and drag-and-drop between status columns
 - Completed handling: columns omit completed by default; per-column `showCompleted: true` shows only completed
-- Settings include a JSON editor for board definitions and a manual Rescan command
+- Visual settings GUI for boards and columns with bidirectional JSON sync for power users
 
 ## Quick Start
 
@@ -44,9 +43,32 @@ Aggregate your Tasks across the vault into customizable kanban boards with power
 - Edit: opens Tasks modal via `apiV1.editTaskLineModal`; falls back to Jump
 - Delete: soft delete by wrapping the line with `<del>…</del>`
 
-## Board Configuration (JSON)
+## Board Configuration
 
-Use Settings → Simple Kanban → Boards (JSON). Click “Load Sample” to start, then Edit and Save.
+Open Settings → Simple Kanban to configure your boards. Two editing modes are available:
+
+### GUI Editor (recommended)
+
+The visual editor lets you create and modify boards without writing JSON:
+
+- **Add/delete boards** with collapsible sections for each
+- **Configure board settings**: name, filter, hidden tags, which dates to show
+- **Add/delete/reorder columns** with ↑/↓ buttons
+- **Configure column settings**: name, filter, status tag (for drag-drop), sort options
+- **Filter syntax**: Use text like `#tag`, `#a AND #b`, `#a OR NOT #b` — validated as you type
+- Click **Save Changes** to apply
+
+### JSON Editor (advanced)
+
+Switch to the JSON tab for direct editing. Useful for bulk changes or copying configs between vaults.
+
+- **Load from GUI**: Populate JSON from current GUI state
+- **Apply JSON to GUI**: Parse JSON and update the visual editor
+- **Load Sample**: Get a starter configuration
+
+Both editors stay in sync — changes in one can be loaded into the other.
+
+### Schema Reference
 
 - Board
   - `id`: string

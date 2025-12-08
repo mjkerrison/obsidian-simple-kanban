@@ -24,10 +24,10 @@ Core components:
 
 - `src/main.ts` – Plugin lifecycle, view activation, board state, handlers.
 - `src/types.ts` – Interfaces for `Task`, `Board`, `Column`, `FilterExpression`, `PluginSettings`.
-- `src/settings.ts` – Settings tab with Boards JSON editor (Load Sample + Save).
+- `src/settings.ts` – Settings tab with GUI board/column editor and JSON editor (bidirectional sync).
 - `src/dataStore.ts` – Simple Map-backed task cache and boards state.
 - `src/taskScanner.ts` – Scans `- [ ]` lines; parses tags and emoji dates (➕ ⏳ 📅 ✅); strips decorations from title; nests subtasks/notes by indentation; supports global include-tags for top-level tasks.
-- `src/filter/parser.ts` – Lexer + Pratt parser for NOT/AND/OR with parentheses; empty → match-all.
+- `src/filter/parser.ts` – Lexer + Pratt parser for NOT/AND/OR with parentheses; empty → match-all; `stringifyFilter()` for AST→text.
 - `src/filter/eval.ts` – Evaluator for `and`/`or`/`not`/`tag`/`empty`.
 - `src/board/BoardView.ts` – ItemView with tabs, scroll preservation, render pipeline.
 - `src/board/ColumnView.ts` – Column container; pumps options into cards.
@@ -42,6 +42,44 @@ Prereqs: Node.js 18+, Obsidian desktop.
 2. `npm run dev` (watch) or `npm run build`
 3. Link this folder into your vault: `.obsidian/plugins/obsidian-simple-kanban/`
 4. Enable the plugin; use command `Open Simple Kanban`.
+
+## Development Workflow
+
+For the best dev experience, use **symlinks + hot reload**:
+
+### 1. Symlink the plugin folder
+
+Instead of copying files after each build, symlink this project directly into your vault:
+
+```bash
+# Remove existing plugin folder if present
+rm -rf /path/to/vault/.obsidian/plugins/obsidian-simple-kanban
+
+# Create symlink
+ln -s /home/you/Projects/obsidian-simple-kanban /path/to/vault/.obsidian/plugins/obsidian-simple-kanban
+```
+
+Now `npm run dev` writes `main.js` directly to where Obsidian reads it.
+
+### 2. (Optional) Install Hot Reload plugin
+
+For automatic plugin reload without restarting Obsidian:
+
+- Install the **Hot Reload** community plugin (by pjeby)
+- Settings → Community Plugins → Browse → "Hot Reload"
+- Or: https://github.com/pjeby/hot-reload
+
+This watches for `main.js` changes and reloads the plugin automatically (~1 second after save).
+
+### 3. Typical flow
+
+```bash
+npm run dev   # Start esbuild in watch mode
+```
+
+Edit code → Save → Plugin reloads automatically (with Hot Reload) or manually reload via Ctrl+R.
+
+**Note**: For settings UI changes, you may need to close and reopen the settings modal to see updates.
 
 ## Tasks Plugin Integration
 
@@ -88,7 +126,6 @@ We use the Tasks API v1, per docs:
 - Reduce flicker with in-place DOM updates
 - Bulk operations, keyboard shortcuts
 - Delete mode choice (strike vs comments)
-- Visual editor for boards/columns
 - Performance: virtualization for long columns; worker-based scanning for huge vaults
 - Ignore paths (performance) — deprioritized; see analysis above
 - Subtasks follow-ups:

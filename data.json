@@ -1,0 +1,422 @@
+{
+  "boards": [
+    {
+      "id": "home",
+      "name": "Home",
+      "filter": {
+        "type": "tag",
+        "value": "#for/home"
+      },
+      "columns": [
+        {
+          "id": "inbox",
+          "name": "Inbox",
+          "type": "filtered",
+          "filter": {
+            "type": "not",
+            "children": [
+              {
+                "type": "or",
+                "children": [
+                  {
+                    "type": "tag",
+                    "value": "#in/backlog"
+                  },
+                  {
+                    "type": "tag",
+                    "value": "#in/wip"
+                  },
+                  {
+                    "type": "tag",
+                    "value": "#in/blocked"
+                  }
+                ]
+              }
+            ]
+          },
+          "statusTag": "#in/box",
+          "sort": {
+            "key": "created",
+            "direction": "asc"
+          }
+        },
+        {
+          "id": "backlog",
+          "name": "Backlog",
+          "type": "filtered",
+          "filter": {
+            "type": "tag",
+            "value": "#in/backlog"
+          },
+          "statusTag": "#in/backlog",
+          "sort": {
+            "key": "created",
+            "direction": "asc"
+          }
+        },
+        {
+          "id": "wip",
+          "name": "WIP",
+          "type": "filtered",
+          "filter": {
+            "type": "tag",
+            "value": "#in/wip"
+          },
+          "statusTag": "#in/wip",
+          "sort": {
+            "key": "created",
+            "direction": "asc"
+          }
+        },
+        {
+          "id": "blocked",
+          "name": "Blocked",
+          "type": "filtered",
+          "filter": {
+            "type": "tag",
+            "value": "#in/blocked"
+          },
+          "statusTag": "#in/blocked",
+          "sort": {
+            "key": "created",
+            "direction": "asc"
+          }
+        },
+        {
+          "id": "completed",
+          "name": "Completed",
+          "type": "filtered",
+          "filter": {
+            "type": "or",
+            "children": []
+          },
+          "showCompleted": true
+        }
+      ],
+      "hideFilterTags": [
+        "#for/home",
+        "#in/box",
+        "#in/backlog",
+        "#in/wip",
+        "#in/blocked"
+      ],
+      "showDates": {
+        "created": true,
+        "scheduled": true,
+        "due": true,
+        "completed": true
+      }
+    },
+    {
+      "id": "work",
+      "name": "Work",
+      "filter": {
+        "type": "tag",
+        "value": "#for/work"
+      },
+      "columns": [
+        {
+          "id": "inbox",
+          "name": "Inbox",
+          "type": "filtered",
+          "filter": {
+            "type": "not",
+            "children": [
+              {
+                "type": "or",
+                "children": [
+                  {
+                    "type": "tag",
+                    "value": "#in/backlog"
+                  },
+                  {
+                    "type": "tag",
+                    "value": "#in/wip"
+                  },
+                  {
+                    "type": "tag",
+                    "value": "#in/blocked"
+                  }
+                ]
+              }
+            ]
+          },
+          "statusTag": "#in/box",
+          "sort": {
+            "key": "created",
+            "direction": "asc"
+          }
+        },
+        {
+          "id": "backlog",
+          "name": "Backlog",
+          "type": "filtered",
+          "filter": {
+            "type": "tag",
+            "value": "#in/backlog"
+          },
+          "statusTag": "#in/backlog",
+          "sort": {
+            "key": "created",
+            "direction": "asc"
+          }
+        },
+        {
+          "id": "wip",
+          "name": "WIP",
+          "type": "filtered",
+          "filter": {
+            "type": "tag",
+            "value": "#in/wip"
+          },
+          "statusTag": "#in/wip",
+          "sort": {
+            "key": "created",
+            "direction": "asc"
+          }
+        },
+        {
+          "id": "blocked",
+          "name": "Blocked",
+          "type": "filtered",
+          "filter": {
+            "type": "tag",
+            "value": "#in/blocked"
+          },
+          "statusTag": "#in/blocked",
+          "sort": {
+            "key": "created",
+            "direction": "asc"
+          }
+        },
+        {
+          "id": "completed",
+          "name": "Completed",
+          "type": "filtered",
+          "filter": {
+            "type": "or",
+            "children": []
+          },
+          "showCompleted": true
+        }
+      ],
+      "hideFilterTags": [
+        "#for/work",
+        "#in/box",
+        "#in/backlog",
+        "#in/wip",
+        "#in/blocked"
+      ],
+      "showDates": {
+        "created": true,
+        "scheduled": true,
+        "due": true,
+        "completed": true
+      }
+    },
+    {
+      "id": "hobbies",
+      "name": "Hobbies",
+      "filter": {
+        "type": "tag",
+        "value": "#for/hobbies"
+      },
+      "columns": [
+        {
+          "id": "inbox",
+          "name": "Inbox",
+          "type": "filtered",
+          "filter": {
+            "type": "not",
+            "children": [
+              {
+                "type": "or",
+                "children": [
+                  {
+                    "type": "tag",
+                    "value": "#in/backlog"
+                  },
+                  {
+                    "type": "tag",
+                    "value": "#in/wip"
+                  },
+                  {
+                    "type": "tag",
+                    "value": "#in/blocked"
+                  }
+                ]
+              }
+            ]
+          },
+          "statusTag": "#in/box",
+          "sort": {
+            "key": "created",
+            "direction": "asc"
+          }
+        },
+        {
+          "id": "backlog",
+          "name": "Backlog",
+          "type": "filtered",
+          "filter": {
+            "type": "tag",
+            "value": "#in/backlog"
+          },
+          "statusTag": "#in/backlog",
+          "sort": {
+            "key": "created",
+            "direction": "asc"
+          }
+        },
+        {
+          "id": "wip",
+          "name": "WIP",
+          "type": "filtered",
+          "filter": {
+            "type": "tag",
+            "value": "#in/wip"
+          },
+          "statusTag": "#in/wip",
+          "sort": {
+            "key": "created",
+            "direction": "asc"
+          }
+        },
+        {
+          "id": "blocked",
+          "name": "Blocked",
+          "type": "filtered",
+          "filter": {
+            "type": "tag",
+            "value": "#in/blocked"
+          },
+          "statusTag": "#in/blocked",
+          "sort": {
+            "key": "created",
+            "direction": "asc"
+          }
+        },
+        {
+          "id": "completed",
+          "name": "Completed",
+          "type": "filtered",
+          "filter": {
+            "type": "or",
+            "children": []
+          },
+          "showCompleted": true
+        }
+      ],
+      "hideFilterTags": [
+        "#for/hobbies",
+        "#in/box",
+        "#in/backlog",
+        "#in/wip",
+        "#in/blocked"
+      ],
+      "showDates": {
+        "created": true,
+        "scheduled": true,
+        "due": true,
+        "completed": true
+      }
+    },
+    {
+      "id": "inbox",
+      "name": "Inbox",
+      "filter": {
+        "type": "or",
+        "children": []
+      },
+      "columns": [
+        {
+          "id": "inbox",
+          "name": "Inbox",
+          "type": "filtered",
+          "filter": {
+            "type": "not",
+            "children": [
+              {
+                "type": "or",
+                "children": [
+                  {
+                    "type": "tag",
+                    "value": "#for/home"
+                  },
+                  {
+                    "type": "tag",
+                    "value": "#for/work"
+                  },
+                  {
+                    "type": "tag",
+                    "value": "#for/hobbies"
+                  }
+                ]
+              }
+            ]
+          },
+          "statusTag": "#for/tbd",
+          "sort": {
+            "key": "created",
+            "direction": "asc"
+          }
+        },
+        {
+          "id": "home",
+          "name": "Home",
+          "type": "filtered",
+          "filter": {
+            "type": "tag",
+            "value": "#for/home"
+          },
+          "statusTag": "#for/home",
+          "sort": {
+            "key": "created",
+            "direction": "asc"
+          }
+        },
+        {
+          "id": "work",
+          "name": "Work",
+          "type": "filtered",
+          "filter": {
+            "type": "tag",
+            "value": "#for/work"
+          },
+          "statusTag": "#for/work",
+          "sort": {
+            "key": "created",
+            "direction": "asc"
+          }
+        },
+        {
+          "id": "hobbies",
+          "name": "Hobbies",
+          "type": "filtered",
+          "filter": {
+            "type": "tag",
+            "value": "#for/hobbies"
+          },
+          "statusTag": "#for/hobbies",
+          "sort": {
+            "key": "created",
+            "direction": "asc"
+          }
+        }
+      ],
+      "hideFilterTags": [
+        "#for/home",
+        "#for/work",
+        "#for/hobbies",
+        "#for/tbd"
+      ],
+      "showDates": {
+        "created": true,
+        "scheduled": true,
+        "due": true,
+        "completed": true
+      }
+    }
+  ],
+  "taskIncludeTags": []
+}
