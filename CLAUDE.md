@@ -139,9 +139,18 @@ Tasks are uniquely identified by `filepath:lineNumber` format:
 - Custom card layouts
 - Export capabilities
 
-## Development Commands
+## Obsidian Plugin Development
 
-(To be determined - check for package.json scripts like `npm run dev`, `npm run build`, etc.)
+Build: `npm run build`
+Dev: `npm run dev`
+Typecheck: `npm run typecheck`
+
+Deploy targets:
+- prod: /home/mjk/Documents/mk-remote
+- dev: /home/mjk/Documents/kepano-obsidian-main
+
+Extra files:
+- (none)
 
 ## Testing Strategy
 
