@@ -3,6 +3,7 @@ export interface Subtask {
   isComplete: boolean;
   tags: string[];
   lineNumber: number;
+  blockId?: string; // Obsidian block ID (without ^)
 }
 
 export interface Task {
@@ -25,6 +26,9 @@ export interface Task {
 
   // Manual ordering (future)
   orderValue?: number;
+
+  // Obsidian block ID (without ^)
+  blockId?: string;
 }
 
 export type ColumnType = 'filtered' | 'completed';
@@ -49,6 +53,8 @@ export interface Column {
     key: 'due' | 'scheduled' | 'created' | 'completed' | 'title';
     direction: 'asc' | 'desc';
   };
+  // Whether this column is collapsed (narrow vertical strip)
+  collapsed?: boolean;
 }
 
 export interface Board {

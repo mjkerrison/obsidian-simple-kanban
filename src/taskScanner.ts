@@ -25,7 +25,9 @@ export function parseTasksFromContent(content: string, path: string, opts?: { in
       if (stack.length === 0) {
         // New top-level (or root-level) task → card
         const id = `${path}:${i + 1}`;
-        const tags = extractTags(rawTail);
+        // Extract block ID first (it's at the end of the line)
+        const { text: withoutBlockId, blockId } = extractAndStripBlockId(rawTail);
+        const tags = extractTags(withoutBlockId);
         const includeTags = opts?.includeTags ?? [];
         if (includeTags.length > 0) {
           const tagSet = new Set(tags);
@@ -35,7 +37,7 @@ export function parseTasksFromContent(content: string, path: string, opts?: { in
             continue;
           }
         }
-        const stripped = stripTags(rawTail);
+        const stripped = stripTags(withoutBlockId);
         const { text, createdDate, scheduledDate, dueDate, completedDate } = extractAndStripDates(stripped);
         const task: Task = {
           id,
@@ -50,16 +52,19 @@ export function parseTasksFromContent(content: string, path: string, opts?: { in
           scheduledDate,
           dueDate,
           completedDate,
+          blockId,
         };
         tasks.push(task);
         stack.push({ indent, task });
       } else {
         // Subtask of current parent
         const parent = stack[stack.length - 1].task;
-        const subTags = extractTags(rawTail);
-        const subStripped = stripTags(rawTail);
+        // Extract block ID first
+        const { text: subWithoutBlockId, blockId: subBlockId } = extractAndStripBlockId(rawTail);
+        const subTags = extractTags(subWithoutBlockId);
+        const subStripped = stripTags(subWithoutBlockId);
         const clean = extractAndStripDates(subStripped).text; // dates on subtasks are ignored for now
-        parent.subtasks.push({ text: clean, isComplete, tags: subTags, lineNumber: i + 1 });
+        parent.subtasks.push({ text: clean, isComplete, tags: subTags, lineNumber: i + 1, blockId: subBlockId });
         // do not push to stack — we only support one subtask level for display
       }
       continue;
@@ -148,4 +153,16 @@ function isValidISODate(s: string): boolean {
   if (day < 1 || day > 31) return false;
   const d = new Date(Date.UTC(year, month - 1, day));
   return d.getUTCFullYear() === year && d.getUTCMonth() + 1 === month && d.getUTCDate() === day;
+}
+
+// Extract and strip Obsidian block ID (e.g., ^abc123) from end of line
+function extractAndStripBlockId(text: string): { text: string; blockId?: string } {
+  const match = text.match(/\s*\^([a-zA-Z0-9_-]+)$/);
+  if (match) {
+    return {
+      text: text.slice(0, match.index).trimEnd(),
+      blockId: match[1],
+    };
+  }
+  return { text };
 }

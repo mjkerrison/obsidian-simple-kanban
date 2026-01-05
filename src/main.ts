@@ -9,6 +9,26 @@ import { evaluateFilter } from './filter/eval';
 import { FileWatcher } from './fileWatcher';
 import { replaceLineWithText, wrapLineWithDel } from './utils/mdEdit';
 
+// Extract block ID from end of line and ensure it stays at the end after edits
+function extractBlockId(line: string): { line: string; blockId: string | null } {
+  const match = line.match(/\s*(\^[a-zA-Z0-9_-]+)$/);
+  if (match) {
+    return {
+      line: line.slice(0, match.index).trimEnd(),
+      blockId: match[1],
+    };
+  }
+  return { line, blockId: null };
+}
+
+function ensureBlockIdAtEnd(line: string, blockId: string | null): string {
+  if (!blockId) return line;
+  // Remove any misplaced block IDs from the line
+  let cleaned = line.replace(/\s*\^[a-zA-Z0-9_-]+/g, '').trimEnd();
+  // Append the original block ID at the end
+  return cleaned + ' ' + blockId;
+}
+
 export default class SimpleKanbanPlugin extends Plugin {
   settings: PluginSettings;
   private currentBoardId: string | null = null;
@@ -94,6 +114,7 @@ export default class SimpleKanbanPlugin extends Plugin {
       onEdit: (t) => this.editTask(t).catch(console.error),
       onToggleSubtask: (t, idx) => this.toggleSubtaskCompletion(t, idx).catch(console.error),
       onMove: (args) => this.moveTaskToColumn(args).catch(console.error),
+      onToggleCollapse: (colId) => this.toggleColumnCollapse(colId).catch(console.error),
     });
   }
 
@@ -126,6 +147,7 @@ export default class SimpleKanbanPlugin extends Plugin {
       onEdit: (t) => this.editTask(t).catch(console.error),
       onToggleSubtask: (t, idx) => this.toggleSubtaskCompletion(t, idx).catch(console.error),
       onMove: (args) => this.moveTaskToColumn(args).catch(console.error),
+      onToggleCollapse: (colId) => this.toggleColumnCollapse(colId).catch(console.error),
     });
   }
 
@@ -166,6 +188,8 @@ export default class SimpleKanbanPlugin extends Plugin {
     const lines = content.split(/\r?\n/);
     if (task.lineNumber <= 0 || task.lineNumber > lines.length) return;
     const line = lines[task.lineNumber - 1];
+    // Extract block ID before toggling so we can preserve it
+    const { blockId } = extractBlockId(line);
     let newLine: string | null = null;
     try {
       const api = this.getTasksApiV1();
@@ -190,6 +214,8 @@ export default class SimpleKanbanPlugin extends Plugin {
         newLine = line.replace(/- \[ \]/, '- [x]') + ` ✅ ${y}-${m}-${d} ${hh}:${mm}`;
       }
     }
+    // Ensure block ID stays at the end of the line
+    newLine = ensureBlockIdAtEnd(newLine, blockId);
     // Tasks API may return two lines for recurring tasks; handle multi-line safely
     await replaceLineWithText(this.app.vault, task.filepath, task.lineNumber, newLine);
     // File watcher will refresh cache and UI
@@ -215,11 +241,15 @@ export default class SimpleKanbanPlugin extends Plugin {
     const lines = content.split(/\r?\n/);
     if (task.lineNumber <= 0 || task.lineNumber > lines.length) return;
     const line = lines[task.lineNumber - 1];
+    // Extract block ID before editing so we can preserve it
+    const { blockId } = extractBlockId(line);
     try {
       const api = this.getTasksApiV1();
       if (api?.editTaskLineModal) {
-        const edited = await api.editTaskLineModal(line);
+        let edited = await api.editTaskLineModal(line);
         if (typeof edited === 'string' && edited.length > 0 && edited !== line) {
+          // Ensure block ID stays at the end of the line
+          edited = ensureBlockIdAtEnd(edited, blockId);
           await replaceLineWithText(this.app.vault, task.filepath, task.lineNumber, edited);
         }
         return;
@@ -239,6 +269,8 @@ export default class SimpleKanbanPlugin extends Plugin {
     const lines = content.split(/\r?\n/);
     if (sub.lineNumber <= 0 || sub.lineNumber > lines.length) return;
     const line = lines[sub.lineNumber - 1];
+    // Extract block ID before toggling so we can preserve it
+    const { blockId } = extractBlockId(line);
     let newLine: string | null = null;
     try {
       const api = this.getTasksApiV1();
@@ -262,6 +294,8 @@ export default class SimpleKanbanPlugin extends Plugin {
         newLine = line.replace(/- \[ \]/, '- [x]') + ` ✅ ${y}-${m}-${d} ${hh}:${mm}`;
       }
     }
+    // Ensure block ID stays at the end of the line
+    newLine = ensureBlockIdAtEnd(newLine, blockId);
     await replaceLineWithText(this.app.vault, task.filepath, sub.lineNumber, newLine);
     // watcher will update view
   }
@@ -289,7 +323,9 @@ export default class SimpleKanbanPlugin extends Plugin {
 
   private replaceStatusTags(line: string, statusTags: string[], destTag: string): string {
     const esc = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    let out = line;
+    // Extract block ID first so we can preserve it at the end
+    const { line: lineWithoutBlockId, blockId } = extractBlockId(line);
+    let out = lineWithoutBlockId;
     // Remove all existing board status tags
     for (const tag of statusTags) {
       const re = new RegExp(`(^|\\s)${esc(tag)}(?=\\s|$)`, 'g');
@@ -300,7 +336,26 @@ export default class SimpleKanbanPlugin extends Plugin {
     // If destTag already present, return
     const hasDest = new RegExp(`(^|\\s)${esc(destTag)}(\\s|$)`).test(out);
     if (!hasDest) out = out + ` ${destTag}`;
-    return out;
+    // Ensure block ID stays at the end
+    return ensureBlockIdAtEnd(out, blockId);
+  }
+
+  private async toggleColumnCollapse(colId: string) {
+    const board = this.getCurrentBoard();
+    const colIndex = board.columns.findIndex((c) => c.id === colId);
+    if (colIndex === -1) return;
+    // Toggle the collapsed state
+    board.columns[colIndex].collapsed = !board.columns[colIndex].collapsed;
+    // Update in settings and save
+    const boardIndex = this.settings.boards.findIndex((b) => b.id === board.id);
+    if (boardIndex !== -1) {
+      this.settings.boards[boardIndex] = board;
+      await this.saveSettings();
+      // Also update dataStore boards
+      dataStore.setBoards(this.settings.boards);
+    }
+    // Re-render the board
+    this.requestBoardRerender();
   }
 
   private getTasksApiV1(): any {

@@ -15,6 +15,7 @@ export class BoardView extends ItemView {
   private onEdit: ((t: Task) => void) | null = null;
   private onToggleSubtask: ((t: Task, idx: number) => void) | null = null;
   private onMove: ((args: { taskId: string; fromColId: string; toColId: string }) => void) | null = null;
+  private onToggleCollapse: ((colId: string) => void) | null = null;
   private lastScrollLeft = 0;
   private lastScrollTop = 0;
 
@@ -92,10 +93,9 @@ export class BoardView extends ItemView {
     for (const col of columns) {
       const tasks = this.tasksByColumn.get(col.id) ?? [];
       total += tasks.length;
-      const title = `${col.name} (${tasks.length})`;
       const allowDrop = !!col.statusTag && !(col.showCompleted === true || col.type === 'completed');
       root.appendChild(
-        renderColumn(title, tasks, {
+        renderColumn(col.name, tasks, {
           hiddenTags: this.board.hideFilterTags,
           showDates: this.board.showDates,
           onToggle: this.onToggle ?? undefined,
@@ -110,6 +110,8 @@ export class BoardView extends ItemView {
                 onDrop: (data) => this.onMove && this.onMove({ taskId: data.taskId, fromColId: data.fromColId, toColId: col.id }),
               }
             : undefined,
+          collapsed: col.collapsed ?? false,
+          onToggleCollapse: this.onToggleCollapse ? () => this.onToggleCollapse!(col.id) : undefined,
         })
       );
     }
@@ -139,12 +141,13 @@ export class BoardView extends ItemView {
     this.onSelectBoard = cb;
   }
 
-  setHandlers(handlers: { onToggle?: (t: Task) => void; onJump?: (t: Task) => void; onDelete?: (t: Task) => void; onEdit?: (t: Task) => void; onToggleSubtask?: (t: Task, idx: number) => void; onMove?: (args: { taskId: string; fromColId: string; toColId: string }) => void }) {
+  setHandlers(handlers: { onToggle?: (t: Task) => void; onJump?: (t: Task) => void; onDelete?: (t: Task) => void; onEdit?: (t: Task) => void; onToggleSubtask?: (t: Task, idx: number) => void; onMove?: (args: { taskId: string; fromColId: string; toColId: string }) => void; onToggleCollapse?: (colId: string) => void }) {
     this.onToggle = handlers.onToggle ?? null;
     this.onJump = handlers.onJump ?? null;
     this.onDelete = handlers.onDelete ?? null;
     this.onEdit = handlers.onEdit ?? null;
     this.onToggleSubtask = handlers.onToggleSubtask ?? null;
     this.onMove = handlers.onMove ?? null;
+    this.onToggleCollapse = handlers.onToggleCollapse ?? null;
   }
 }

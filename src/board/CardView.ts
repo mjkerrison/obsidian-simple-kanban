@@ -110,6 +110,8 @@ function stripDecorationsForDisplay(text: string): string {
   // strip inline tags and any date emojis
   let out = text.replace(/(^|\s)#[\w\/-]+/g, ' ');
   out = out.replace(/\s[➕⏳📅✅]\s\d{4}-\d{2}-\d{2}(?:\s+\d{2}:\d{2})?/g, ' ');
+  // strip block IDs (e.g., ^abc123) - should already be handled by parser but safety measure
+  out = out.replace(/\s*\^[a-zA-Z0-9_-]+/g, '');
   return out.replace(/\s{2,}/g, ' ').trim();
 }
 
